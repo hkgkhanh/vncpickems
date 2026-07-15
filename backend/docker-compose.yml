@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: cube_comp_prediction
+      MYSQL_DATABASE: vncpickems
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql

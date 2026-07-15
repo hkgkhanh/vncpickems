@@ -1,4 +1,4 @@
-# cube-comp-prediction
+# VNC Pickems
 A simple website for predicting cubing competitions' results, originally designed for Vietnam Championship 2026.
 
 

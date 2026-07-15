@@ -11,75 +11,100 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema cube_comp_prediction
+-- Schema vncpickems
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `cube_comp_prediction` ;
+DROP SCHEMA IF EXISTS `vncpickems` ;
 
 -- -----------------------------------------------------
--- Schema cube_comp_prediction
+-- Schema vncpickems
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `cube_comp_prediction` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `cube_comp_prediction` ;
+CREATE SCHEMA IF NOT EXISTS `vncpickems` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `vncpickems` ;
 
 -- -----------------------------------------------------
--- Table `cube_comp_prediction`.`users`
+-- Table `vncpickems`.`admins`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `cube_comp_prediction`.`users` ;
+DROP TABLE IF EXISTS `vncpickems`.`admins` ;
 
-CREATE TABLE IF NOT EXISTS `cube_comp_prediction`.`users` (
-  `id` VARCHAR(36) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `name` VARCHAR(45) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `vncpickems`.`admins` (
+  `username` VARCHAR(45) NOT NULL,
   `hashed_password` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`username`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `cube_comp_prediction`.`instances`
+-- Table `vncpickems`.`prediction_games`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `cube_comp_prediction`.`instances` ;
+DROP TABLE IF EXISTS `vncpickems`.`prediction_games` ;
 
-CREATE TABLE IF NOT EXISTS `cube_comp_prediction`.`instances` (
-  `id` VARCHAR(36) NOT NULL,
-  `name` VARCHAR(100) NULL DEFAULT NULL,
-  `owned_by` VARCHAR(36) NOT NULL,
-  `data` LONGTEXT NULL DEFAULT NULL,
-  `created_at` TIMESTAMP(6) NOT NULL,
-  `updated_at` TIMESTAMP(6) NULL DEFAULT NULL,
-  `deleted_at` TIMESTAMP(6) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `owned_by_idx` (`owned_by` ASC) VISIBLE,
-  CONSTRAINT `user_instance`
-    FOREIGN KEY (`owned_by`)
-    REFERENCES `cube_comp_prediction`.`users` (`id`))
+CREATE TABLE IF NOT EXISTS `vncpickems`.`prediction_games` (
+  `competition_id` VARCHAR(100) NOT NULL,
+  `published` TINYINT NOT NULL DEFAULT '0',
+  `prediction_open` TIMESTAMP(6) NOT NULL,
+  `prediction_close` TIMESTAMP(6) NOT NULL,
+  `competition_start_date` DATE NOT NULL,
+  `competition_end_date` DATE NOT NULL,
+  `competition_registration_open` TIMESTAMP(6) NOT NULL,
+  `competition_registration_close` TIMESTAMP(6) NOT NULL,
+  `competition_country_iso2` VARCHAR(2) NOT NULL,
+  `competition_event_ids` VARCHAR(100),
+  `competition_psych_sheets` LONGTEXT NULL DEFAULT NULL,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`competition_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `cube_comp_prediction`.`solutions`
+-- Table `vncpickems`.`participants`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `cube_comp_prediction`.`solutions` ;
+DROP TABLE IF EXISTS `vncpickems`.`participants` ;
 
-CREATE TABLE IF NOT EXISTS `cube_comp_prediction`.`solutions` (
-  `id` VARCHAR(36) NOT NULL,
-  `instance_id` VARCHAR(36) NOT NULL,
-  `data` LONGTEXT NOT NULL,
-  `created_at` TIMESTAMP(6) NOT NULL,
-  `deleted_at` TIMESTAMP(6) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `instance_solution_idx` (`instance_id` ASC) VISIBLE,
-  CONSTRAINT `instance_solution`
-    FOREIGN KEY (`instance_id`)
-    REFERENCES `cube_comp_prediction`.`instances` (`id`))
+CREATE TABLE IF NOT EXISTS `vncpickems`.`participants` (
+  `email` VARCHAR(100) NOT NULL,
+  `display_name` VARCHAR(100) NULL DEFAULT NULL,
+  `facebook_url` VARCHAR(255) NULL DEFAULT NULL,
+  `participates_in` VARCHAR(100) NOT NULL,
+  `podium_prediction` LONGTEXT NULL DEFAULT NULL,
+  `additional_prediction_number_of_nr` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `additional_prediction_avg_to_qualify_for_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
+  `additional_prediction_avg_to_win_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`email`, `participates_in`),
+  INDEX `participates_in_idx` (`participates_in` ASC) VISIBLE,
+  CONSTRAINT `prediction_participant`
+    FOREIGN KEY (`participates_in`)
+    REFERENCES `vncpickems`.`prediction_games` (`competition_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `vncpickems`.`competition_results`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `vncpickems`.`competition_results` ;
+
+CREATE TABLE IF NOT EXISTS `vncpickems`.`competition_results` (
+  `competition_id` VARCHAR(100) NOT NULL,
+  `podium` LONGTEXT NULL DEFAULT NULL,
+  `additional_result_number_of_nr` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `additional_result_avg_to_qualify_for_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
+  `additional_result_avg_to_win_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`competition_id`),
+  CONSTRAINT `results_of_competition`
+    FOREIGN KEY (`competition_id`)
+    REFERENCES `vncpickems`.`prediction_games` (`competition_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
