@@ -29,8 +29,8 @@ DROP TABLE IF EXISTS `vncpickems`.`admins` ;
 CREATE TABLE IF NOT EXISTS `vncpickems`.`admins` (
   `username` VARCHAR(45) NOT NULL,
   `hashed_password` VARCHAR(100) NOT NULL,
-  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`username`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -44,9 +44,10 @@ DROP TABLE IF EXISTS `vncpickems`.`prediction_games` ;
 
 CREATE TABLE IF NOT EXISTS `vncpickems`.`prediction_games` (
   `competition_id` VARCHAR(100) NOT NULL,
+  `competition_name` VARCHAR(255) NOT NULL,
   `published` TINYINT NOT NULL DEFAULT '0',
-  `prediction_open` TIMESTAMP(6) NOT NULL,
-  `prediction_close` TIMESTAMP(6) NOT NULL,
+  `prediction_open` TIMESTAMP(6) NULL,
+  `prediction_close` TIMESTAMP(6) NULL,
   `competition_start_date` DATE NOT NULL,
   `competition_end_date` DATE NOT NULL,
   `competition_registration_open` TIMESTAMP(6) NOT NULL,
@@ -54,8 +55,8 @@ CREATE TABLE IF NOT EXISTS `vncpickems`.`prediction_games` (
   `competition_country_iso2` VARCHAR(2) NOT NULL,
   `competition_event_ids` VARCHAR(100),
   `competition_psych_sheets` LONGTEXT NULL DEFAULT NULL,
-  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`competition_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -76,8 +77,8 @@ CREATE TABLE IF NOT EXISTS `vncpickems`.`participants` (
   `additional_prediction_number_of_nr` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `additional_prediction_avg_to_qualify_for_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
   `additional_prediction_avg_to_win_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
-  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`email`, `participates_in`),
   INDEX `participates_in_idx` (`participates_in` ASC) VISIBLE,
   CONSTRAINT `prediction_participant`
@@ -99,8 +100,8 @@ CREATE TABLE IF NOT EXISTS `vncpickems`.`competition_results` (
   `additional_result_number_of_nr` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `additional_result_avg_to_qualify_for_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
   `additional_result_avg_to_win_333_final` INT UNSIGNED NOT NULL DEFAULT 1000,
-  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`competition_id`),
   CONSTRAINT `results_of_competition`
     FOREIGN KEY (`competition_id`)

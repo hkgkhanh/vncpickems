@@ -8,6 +8,9 @@ import bases.__init__ # needs this to init all models before init backend
 
 from auth.routes import router as auth_router
 from admins.routes import router as admins_router
+from prediction_games.routes import router as prediction_games_router
+from participants.routes import router as participants_router
+from competition_results.routes import router as competition_results_router
 
 load_dotenv()
 
@@ -30,6 +33,9 @@ api_router = APIRouter(prefix="/api/v0")
 
 api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
 api_router.include_router(admins_router, prefix="/admins", tags=["admins"])
+api_router.include_router(prediction_games_router, prefix="/prediction_games", tags=["prediction_games"])
+api_router.include_router(participants_router, prefix="/participants", tags=["participants"])
+api_router.include_router(competition_results_router, prefix="/competition_results", tags=["competition_results"])
 
 @app.get("/", response_class=HTMLResponse)
 def root():
