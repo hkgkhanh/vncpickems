@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import PredictionCard from "./PredictionCard";
-import { getApiUrl } from "@/lib/url_utils";
 
 export default function PredictionGrid() {
   const [games, setGames] = useState([]);
@@ -19,7 +18,7 @@ export default function PredictionGrid() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin?page=${page}`),
+        `${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin?page=${page}`,
         {
           credentials: "include",
           cache: "no-store",

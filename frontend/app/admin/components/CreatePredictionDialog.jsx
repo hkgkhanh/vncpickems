@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getApiUrl } from "@/lib/url_utils";
 
 export default function CreatePredictionDialog() {
   const dialogRef = useRef();
@@ -23,7 +22,7 @@ export default function CreatePredictionDialog() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin`),
+        `${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin`,
         {
           method: "POST",
           credentials: "include",

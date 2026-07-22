@@ -1,6 +1,5 @@
 "use client";
 
-import { getApiUrl } from "@/lib/url_utils";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
@@ -9,7 +8,7 @@ export default function LogoutButton() {
   async function logout() {
     try {
       await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`),
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
         {
           method: "POST",
           credentials: "include",

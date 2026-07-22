@@ -7,7 +7,6 @@ import ReadOnlyField from "./ReadOnlyField";
 import PredictionTable from "./PredictionTable";
 import ResultInput from "./ResultInput";
 import { parseBackendDate } from "@/lib/datetime_utils";
-import { getApiUrl } from "@/lib/url_utils";
 
 export default function PredictionForm({ competition }) {
   const { user, credential, logout } = useGoogleAuth();
@@ -28,7 +27,7 @@ export default function PredictionForm({ competition }) {
 
   async function loadPrediction() {
     try {
-      const response = await fetch(getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/participants/client/${competition.competition_id}`),
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/participants/client/${competition.competition_id}`,
         {
           headers: {
             Authorization: `Bearer ${credential}`,
@@ -92,7 +91,7 @@ export default function PredictionForm({ competition }) {
       };
 
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/participants/client`),
+        `${process.env.NEXT_PUBLIC_API_URL}/participants/client`,
         {
           method: "POST",
           headers: {
@@ -126,7 +125,7 @@ export default function PredictionForm({ competition }) {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/participants/client`),
+        `${process.env.NEXT_PUBLIC_API_URL}/participants/client`,
         {
           method: "DELETE",
           headers: {

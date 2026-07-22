@@ -5,7 +5,6 @@ import config from "@/data/config.json";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { formatResult } from "@/lib/wca_result_utils";
-import { getApiUrl } from "@/lib/url_utils";
 
 export default function PredictionResult({ competition, result }) {
   const [mode, setMode] = useState("result"); // "result" | "prediction"
@@ -63,7 +62,7 @@ export default function PredictionResult({ competition, result }) {
       }
 
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_results/all/${result.competition_id}?${params.toString()}`),
+        `${process.env.NEXT_PUBLIC_API_URL}/prediction_results/all/${result.competition_id}?${params.toString()}`,
         {
           cache: "no-store",
         }

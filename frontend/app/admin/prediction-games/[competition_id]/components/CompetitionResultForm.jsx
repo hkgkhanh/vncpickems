@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import PredictionTable from "@/components/PredictionTable";
 import ResultInput from "@/components//ResultInput";
-import { getApiUrl } from "@/lib/url_utils";
 
 export default function PredictionForm({ competition }) {
   const [saving, setSaving] = useState(false);
@@ -20,7 +19,7 @@ export default function PredictionForm({ competition }) {
 
   async function loadPrediction() {
     try {
-      const response = await fetch(getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/${competition.competition_id}`),
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/${competition.competition_id}`,
         {
           cache: "no-store",
         }
@@ -76,7 +75,7 @@ export default function PredictionForm({ competition }) {
       };
 
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/admin`),
+        `${process.env.NEXT_PUBLIC_API_URL}/competition_results/admin`,
         {
           method: "POST",
           credentials: "include",
@@ -110,7 +109,7 @@ export default function PredictionForm({ competition }) {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/admin${competition.competition_id}`),
+        `${process.env.NEXT_PUBLIC_API_URL}/competition_results/admin${competition.competition_id}`,
         {
           method: "DELETE",
           credentials: "include"
