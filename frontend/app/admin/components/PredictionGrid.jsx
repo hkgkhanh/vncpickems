@@ -19,7 +19,7 @@ export default function PredictionGrid() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin?page=${page}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_games/admin?page=${page}`),
         {
           credentials: "include",
           cache: "no-store",

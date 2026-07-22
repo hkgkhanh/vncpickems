@@ -24,7 +24,7 @@ function LoginForm() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/auth/login`),
         {
           method: "POST",
           credentials: "include",

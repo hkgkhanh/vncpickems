@@ -32,7 +32,7 @@ export default function CompetitionPage() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/client/${competition_id}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_games/client/${competition_id}`),
         {
           cache: "no-store",
         }
@@ -58,7 +58,7 @@ export default function CompetitionPage() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/${competition_id}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/competition_results/${competition_id}`),
         {
           cache: "no-store",
         }

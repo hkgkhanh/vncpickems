@@ -9,7 +9,7 @@ export default function LogoutButton() {
   async function logout() {
     try {
       await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/auth/logout`),
         {
           method: "POST",
           credentials: "include",

@@ -63,7 +63,7 @@ export default function PredictionResult({ competition, result }) {
       }
 
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_results/all/${result.competition_id}?${params.toString()}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_results/all/${result.competition_id}?${params.toString()}`),
         {
           cache: "no-store",
         }

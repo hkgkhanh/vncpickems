@@ -42,7 +42,7 @@ export default function PredictionGamePage() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_games/admin/${competition_id}`),
         {
           credentials: "include",
           cache: "no-store",
@@ -72,7 +72,7 @@ export default function PredictionGamePage() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_games/admin/${competition_id}`),
         {
           method: "PUT",
           credentials: "include",

@@ -26,7 +26,7 @@ export default function ParticipantsTab({ competitionId, eventIds, psychSheets }
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/participants/admin/all/${competitionId}?page=${pageNumber}`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/participants/admin/all/${competitionId}?page=${pageNumber}`),
         {
           credentials: "include",
           cache: "no-store",
