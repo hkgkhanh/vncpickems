@@ -19,3 +19,4 @@ class Participant(Base):
     updated_at = Column(TIMESTAMP, nullable=True)
 
     predicts_for_game = relationship("PredictionGame", back_populates="participants")
+    prediction_result = relationship("PredictionResult", back_populates="participant")

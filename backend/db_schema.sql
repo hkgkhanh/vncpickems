@@ -111,6 +111,34 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
+-- -----------------------------------------------------
+-- Table `vncpickems`.`prediction_results`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `vncpickems`.`prediction_results` ;
+
+CREATE TABLE IF NOT EXISTS `vncpickems`.`prediction_results` (
+  `email` VARCHAR(100) NOT NULL,
+  `competition_id` VARCHAR(100) NOT NULL,
+  `point_podium` LONGTEXT NULL DEFAULT NULL,
+  `point_number_of_nr` INT UNSIGNED NOT NULL DEFAULT 0,
+  `point_avg_to_qualify_for_333_final` INT UNSIGNED NOT NULL DEFAULT 0,
+  `point_avg_to_win_333_final` INT UNSIGNED NOT NULL DEFAULT 0,
+  `total_point` INT UNSIGNED NOT NULL DEFAULT 0,
+  `pos` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_at` TIMESTAMP(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (`email`, `competition_id`),
+  CONSTRAINT `results_of_participant`
+    FOREIGN KEY (`email`)
+    REFERENCES `vncpickems`.`participants` (`email`),
+  CONSTRAINT `results_of_prediction`
+    FOREIGN KEY (`competition_id`)
+    REFERENCES `vncpickems`.`prediction_games` (`competition_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

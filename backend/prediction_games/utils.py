@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 def retrieve_from_url(url: str) -> any:
     try:
@@ -28,6 +29,29 @@ def retrieve_from_url(url: str) -> any:
     return data
 
 
+from concurrent.futures import ThreadPoolExecutor
+
+
+def fetch_psych_sheet(competition_id: str, event_id: str, country_iso2: str):
+    psych_sheet = retrieve_from_url(f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/psych-sheet/{event_id}")
+
+    return {
+        "event_id": event_id,
+        "psych_sheet": [
+            {
+                "name": record["name"],
+                "user_id": record["user_id"],
+                "country_iso2": record["country_iso2"],
+                "average_best": record["average_best"],
+                "single_best": record["single_best"],
+                "pos": record["pos"],
+            }
+            for record in psych_sheet["sorted_rankings"]
+            if record["country_iso2"] == country_iso2
+        ],
+    }
+
+
 def fetch_competition_info(competition_id: str):
     competition = retrieve_from_url(f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}")
 
@@ -41,27 +65,12 @@ def fetch_competition_info(competition_id: str):
     psych_sheets = []
 
     # Get psych sheet for each event_id
-    for event_id in event_ids:
-        event_psych_sheet = {
-            "event_id": event_id,
-            "psych_sheet": []
-        }
-
-        psych_sheet = retrieve_from_url(f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/psych-sheet/{event_id}")
-
-        for record in psych_sheet["sorted_rankings"]:
-            if record["country_iso2"] != country_iso2:
-                continue # skip non-Vietnamese
-
-            event_psych_sheet["psych_sheet"].append({
-                "name": record["name"],
-                "user_id": record["user_id"],
-                "country_iso2": record["country_iso2"],
-                "average_best": record["average_best"],
-                "single_best": record["single_best"],
-                "pos": record["pos"]
-            })
-
-        psych_sheets.append(event_psych_sheet)
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        psych_sheets = list(
+            executor.map(
+                lambda event_id: fetch_psych_sheet(competition_id, event_id, country_iso2),
+                event_ids,
+            )
+        )
 
     return competition_name, event_ids, country_iso2, competition_start_date, competition_end_date, competition_registration_open, competition_registration_close, psych_sheets

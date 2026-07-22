@@ -24,3 +24,4 @@ class PredictionGame(Base):
 
     participants = relationship("Participant", back_populates="predicts_for_game")
     competition_result = relationship("CompetitionResult", back_populates="prediction_game")
+    prediction_results = relationship("PredictionResult", back_populates="prediction_game")

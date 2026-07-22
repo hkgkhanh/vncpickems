@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from .models import CompetitionResult
 from prediction_games.models import PredictionGame
 from .schemas import CreateCompetitionResultSchema, CompetitionResultSchema
+from prediction_results.utils import calculate_prediction_results
 import json
 from math import ceil
 
@@ -53,6 +54,8 @@ def create_competition_result(request_data: CreateCompetitionResultSchema, db: S
 
         db.commit()
         db.refresh(db_competition_result)
+
+    calculate_prediction_results(competition_result=request_data, db=db)
 
     return CompetitionResultSchema(
         competition_id = request_data.competition_id,

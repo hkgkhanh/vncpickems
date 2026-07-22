@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from .utils import fetch_competition_info
 from .models import PredictionGame
-from .schemas import PredictionGameSchema, CreatePredictionGameRequest, PredictionGamesList
+from .schemas import PredictionGameSchema, CreatePredictionGameRequest, PredictionGamesList, UpdatePredictionGameSchema
 import json
 from math import ceil
 
@@ -15,6 +15,11 @@ router = APIRouter()
 
 @router.post("/admin")
 def create_prediction_game(request_data: CreatePredictionGameRequest, current_admin: Admin = Depends(get_current_admin), db: Session = Depends(get_db)) -> PredictionGameSchema:
+
+    previous_prediction_game = db.query(PredictionGame).filter(PredictionGame.competition_id == request_data.competition_id).first()
+
+    if previous_prediction_game:
+        raise HTTPException(status_code=400, detail=f"Prediction Game for competition with ID {request_data.competition_id} already exists")
 
     competition_id = request_data.competition_id
     competition_name, event_ids, country_iso2, competition_start_date, competition_end_date, competition_registration_open, competition_registration_close, psych_sheets = fetch_competition_info(competition_id)
@@ -149,7 +154,7 @@ def get_prediction_game(competition_id: str, db: Session = Depends(get_db)):
 
 
 @router.put("/admin/{competition_id}", response_model=PredictionGameSchema)
-def update_prediction_game(competition_id: str, payload: PredictionGameSchema, db: Session = Depends(get_db), current_admin = Depends(get_current_admin)):
+def update_prediction_game(competition_id: str, payload: UpdatePredictionGameSchema, db: Session = Depends(get_db), current_admin = Depends(get_current_admin)):
     prediction_game = db.query(PredictionGame).filter(PredictionGame.competition_id == competition_id).first()
 
     if not prediction_game:

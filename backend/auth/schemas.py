@@ -18,3 +18,8 @@ class AdminResponse(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+
+class GoogleUser(BaseModel):
+    sub: str
+    email: str

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from fastapi import Depends, HTTPException, status, Request
-from .schemas import TokenData
+from fastapi import Depends, HTTPException, status, Request, Header
+from .schemas import TokenData, GoogleUser
 from admins.models import Admin
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import ValidationError
@@ -11,11 +11,14 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from db.dependencies import get_db
 from db.database import engine, Base
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 load_dotenv()
 
 ENCRYPT_ALGORITHM = os.getenv("ENCRYPT_ALGORITHM")
 SECRET_KEY = os.getenv("SECRET_KEY")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 Base.metadata.create_all(bind=engine)
 
@@ -94,3 +97,21 @@ def get_current_admin(request: Request, db: Session = Depends(get_db)):
     if admin is None:
         raise credentials_exception
     return admin
+
+
+def get_current_google_user(authorization: str = Header(None)) -> GoogleUser:
+    if authorization is None:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid Authorization header")
+
+    token = authorization[7:]
+
+    try:
+        id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google ID token")
+
+    return GoogleUser(sub=id_info["sub"], email=id_info["email"])

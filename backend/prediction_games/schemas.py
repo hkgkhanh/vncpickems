@@ -37,6 +37,12 @@ class CreatePredictionGameRequest(BaseModel):
     competition_id: str
 
 
+class UpdatePredictionGameSchema(BaseModel):
+    published: bool
+    prediction_open: datetime | None
+    prediction_close: datetime | None
+
+
 class ShortenPredictionGameSchema(BaseModel):
     competition_id: str
     competition_name: str

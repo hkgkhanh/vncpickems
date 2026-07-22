@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
-from auth.dependencies import get_current_admin
+from auth.dependencies import get_current_admin, get_current_google_user
+from auth.schemas import GoogleUser
 from admins.models import Admin
 from db.dependencies import get_db
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from .models import Participant
 from prediction_games.models import PredictionGame
 from .schemas import ParticipantSchema, CreateParticipantRequest, ParticipantsList, GetParticipantPayload, DeleteParticipantPayload
@@ -14,19 +15,19 @@ router = APIRouter()
 
 
 @router.post("/client", response_model=ParticipantSchema)
-def create_participant(request_data: CreateParticipantRequest, db: Session = Depends(get_db)):
+def create_participant(request_data: CreateParticipantRequest, google_user: GoogleUser = Depends(get_current_google_user), db: Session = Depends(get_db)):
 
     db_prediction_game = db.query(PredictionGame).filter(PredictionGame.competition_id == request_data.participates_in, PredictionGame.published.is_(True)).first()
 
     if not db_prediction_game:
         raise HTTPException(status_code=404, detail=f"Prediction Game for competition {request_data.participates_in} not found")
 
-    db_participant = db.query(Participant).filter(Participant.email == request_data.email, Participant.participates_in == request_data.participates_in).first()
+    db_participant = db.query(Participant).filter(Participant.email == google_user.email, Participant.participates_in == request_data.participates_in).first()
 
     if not db_participant:
         now_timestamp = datetime.now(timezone.utc)
         db_participant = Participant(
-            email = request_data.email,
+            email = google_user.email,
             participates_in = request_data.participates_in,
             display_name = request_data.display_name,
             facebook_url = request_data.facebook_url,
@@ -58,7 +59,7 @@ def create_participant(request_data: CreateParticipantRequest, db: Session = Dep
         db.refresh(db_participant)
 
     return ParticipantSchema(
-        email = request_data.email,
+        email = google_user.email,
         participates_in = request_data.participates_in,
         display_name = request_data.display_name,
         facebook_url = request_data.facebook_url,
@@ -71,10 +72,10 @@ def create_participant(request_data: CreateParticipantRequest, db: Session = Dep
     )
 
 
-@router.get("/client", response_model=ParticipantSchema)
-def get_participant(payload: GetParticipantPayload, db: Session = Depends(get_db)):
-    email = payload.email
-    participates_in = payload.participates_in
+@router.get("/client/{participates_in}", response_model=ParticipantSchema)
+def get_participant(participates_in: str, google_user: GoogleUser = Depends(get_current_google_user), db: Session = Depends(get_db)):
+    email = google_user.email
+    # participates_in = payload.participates_in
 
     participant = db.query(Participant).filter(Participant.email == email, Participant.participates_in == participates_in).first()
 
@@ -95,13 +96,18 @@ def get_participant(payload: GetParticipantPayload, db: Session = Depends(get_db
     )
 
 
-@router.get("/client/{participates_in}", response_model=ParticipantsList)
+@router.get("/client/all/{participates_in}", response_model=ParticipantsList)
 def get_participants_of_a_prediction_game_client(participates_in: str, page: int = Query(1, ge=1), db: Session = Depends(get_db)):
 
-    comp_result = db.query(CompetitionResult).filter(CompetitionResult.competition_id == participates_in).first()
+    now = datetime.now(UTC).replace(tzinfo=None)
 
-    if not comp_result:
-        raise HTTPException(status_code=403, detail=f"Other participants' prediction for competition {request_data.participates_in} is prohibited")
+    prediction_game = db.query(PredictionGame).filter(PredictionGame.competition_id == participates_in).first()
+
+    if prediction_game is None:
+        raise HTTPException(status_code=404, detail="Prediction game not found")
+
+    if now < prediction_game.prediction_close:
+        raise HTTPException(status_code=403, detail="Other participants' predictions are not available until the prediction period has closed.")
 
     PAGE_SIZE = 24
 
@@ -128,7 +134,7 @@ def get_participants_of_a_prediction_game_client(participates_in: str, page: int
     }
 
 
-@router.get("/admin/{participates_in}", response_model=ParticipantsList)
+@router.get("/admin/all/{participates_in}", response_model=ParticipantsList)
 def get_participants_of_a_prediction_game_admin(participates_in: str, page: int = Query(1, ge=1), db: Session = Depends(get_db), current_admin: Admin = Depends(get_current_admin)):
     PAGE_SIZE = 24
 
@@ -156,8 +162,8 @@ def get_participants_of_a_prediction_game_admin(participates_in: str, page: int 
 
 
 @router.delete("/client")
-def delete_participant(payload: DeleteParticipantPayload, db: Session = Depends(get_db)):
-    email = payload.email
+def delete_participant(payload: DeleteParticipantPayload, google_user: GoogleUser = Depends(get_current_google_user), db: Session = Depends(get_db)):
+    email = google_user.email
     participates_in = payload.participates_in
 
     try:

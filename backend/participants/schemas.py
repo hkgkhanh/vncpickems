@@ -29,7 +29,7 @@ class ParticipantSchema(BaseModel):
 
 
 class CreateParticipantRequest(BaseModel):
-    email: str
+    # email: str
     participates_in: str
     display_name: str | None
     facebook_url: str | None
@@ -40,12 +40,10 @@ class CreateParticipantRequest(BaseModel):
 
 
 class GetParticipantPayload(BaseModel):
-    email: str
     participates_in: str
 
 
 class DeleteParticipantPayload(BaseModel):
-    email: str
     participates_in: str
 
 
