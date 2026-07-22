@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { formatResult } from "@/lib/wca_result_utils";
 import config from "@/data/config.json";
+import { getApiUrl } from "@/lib/url_utils";
 
 export default function ParticipantsTab({ competitionId, eventIds, psychSheets }) {
   const [participants, setParticipants] = useState([]);
@@ -25,7 +26,7 @@ export default function ParticipantsTab({ competitionId, eventIds, psychSheets }
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/participants/admin/all/${competitionId}?page=${pageNumber}`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/participants/admin/all/${competitionId}?page=${pageNumber}`),
         {
           credentials: "include",
           cache: "no-store",
