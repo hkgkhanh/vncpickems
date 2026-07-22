@@ -23,7 +23,7 @@ export default function CreatePredictionDialog() {
 
     try {
       const response = await fetch(
-        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin`),
+        getApiUrl(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prediction_games/admin`),
         {
           method: "POST",
           credentials: "include",
