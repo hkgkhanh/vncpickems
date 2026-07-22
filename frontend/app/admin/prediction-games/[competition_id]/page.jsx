@@ -13,6 +13,7 @@ import CompetitionResultForm from "./components/CompetitionResultForm";
 import { formatDateTime, parseBackendDate, formatOriginalDate } from "@/lib/datetime_utils";
 import { formatResult } from "@/lib/wca_result_utils";
 import config from "@/data/config.json";
+import { getApiUrl } from "@/lib/url_utils";
 
 const TABS = {
   GENERAL: "general",
@@ -41,7 +42,7 @@ export default function PredictionGamePage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`),
         {
           credentials: "include",
           cache: "no-store",
@@ -71,7 +72,7 @@ export default function PredictionGamePage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/admin/${competition_id}`),
         {
           method: "PUT",
           credentials: "include",

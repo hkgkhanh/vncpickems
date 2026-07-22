@@ -11,6 +11,7 @@ import ReadOnlyField from "../../../components/ReadOnlyField";
 import { formatDateTime, formatOriginalDate, parseBackendDate } from "@/lib/datetime_utils";
 import ParticipantsTab from "./components/ParticipantsTab";
 import PredictionResult from "./components/PredictionResults";
+import { getApiUrl } from "@/lib/url_utils";
 
 export default function CompetitionPage() {
   const { competition_id } = useParams();
@@ -31,7 +32,7 @@ export default function CompetitionPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/prediction_games/client/${competition_id}`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/prediction_games/client/${competition_id}`),
         {
           cache: "no-store",
         }
@@ -57,7 +58,7 @@ export default function CompetitionPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/competition_results/${competition_id}`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/competition_results/${competition_id}`),
         {
           cache: "no-store",
         }

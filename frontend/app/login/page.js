@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getApiUrl } from "@/lib/url_utils";
 
 function LoginForm() {
   const router = useRouter();
@@ -23,7 +24,7 @@ function LoginForm() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        getApiUrl(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`),
         {
           method: "POST",
           credentials: "include",
