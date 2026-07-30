@@ -4,6 +4,7 @@ from auth.schemas import GoogleUser
 from admins.models import Admin
 from db.dependencies import get_db
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from datetime import datetime, timezone
 from .models import PredictionResult
 from participants.models import Participant
@@ -19,7 +20,13 @@ router = APIRouter()
 def get_prediction_results_of_a_prediction_game(competition_id: str, email: str | None = Query(None), page: int = Query(1, ge=1), db: Session = Depends(get_db)):
     PAGE_SIZE = 10
 
-    base_query = db.query(PredictionResult, Participant).join(Participant, PredictionResult.email == Participant.email).filter(PredictionResult.competition_id == competition_id)
+    base_query = db.query(PredictionResult, Participant).join(
+        Participant,
+        and_(
+            PredictionResult.email == Participant.email,
+            PredictionResult.competition_id == Participant.competition_id,
+        )
+    ).filter(PredictionResult.competition_id == competition_id)
     if email is not None:
         base_query = base_query.filter(PredictionResult.email == email)
         
